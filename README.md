@@ -16,7 +16,7 @@ Ce code permet de lire et d'afficher en temps réel une mesure d'entrée analogi
 - Une boucle infinie est exécutée pour lire en continu la valeur de l'entrée analogique et mettre à jour la courbe.
 
 ## Paramètres
-- Le nom de la mesure à lire est défini `AIN0`.
+- `name` est le nom de l'entrée du Labjack à lire (par défaut : AIN0).
 - `windowWidth` joue sur la durée d'affichage à l'écran (en ms).
 - `ptr` correspond au nombre de points. Par exemple, `ptr%20` permet de tracer 20 points à chaque update (sur de hautes fréquences, tracer 1 point par update peut ralentir l'exécution du programme).
 - `interval` correspond à l'intervalle entre chaque point (en μs).
