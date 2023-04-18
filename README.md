@@ -4,6 +4,11 @@ Signal Labjack T7
 ## Pré-requis
 - Labjack T7
 - Par défaut, connexion Ethernet (port 502 pour Modbus) avec un signal sur l'entrée AIN0
+- Python 3
+
+## Installation
+- Installation des packages requis : `pip install -r requirements.txt`
+- Exécution : `python graph_ljm.py`
 
 ## Description
 Ce code permet de lire et d'afficher en temps réel une mesure d'entrée analogique provenant d'un LabJack:

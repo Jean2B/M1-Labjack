@@ -1,0 +1,3 @@
+numpy==1.23.5
+labjack-ljm==1.21.0
+pyqtgraph==0.13.1
