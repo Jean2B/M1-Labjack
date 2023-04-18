@@ -25,5 +25,5 @@ Ce code permet de lire et d'afficher en temps réel une mesure d'entrée analogi
 - [LJM Library (Labjack)](https://labjack.com/pages/support?doc=/software-driver/ljm-users-guide/ljm-library-overview/) Pour communiquer avec le périphérique.
 - [PyQtGraph](https://www.pyqtgraph.org/) Pour tracer le graphe en temps réel.
 
-## Learn More
+## En savoir plus
 - [Labjack Documentation](https://labjack.com/products/labjack-t7)
