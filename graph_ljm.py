@@ -11,6 +11,8 @@ import sys
 import pyqtgraph as pg
 from labjack import ljm
 
+import dbms_class
+
 
 # Open first found LabJack
 try:
@@ -28,6 +30,20 @@ else:
     # Setup and call eReadName to read from AIN0 on the LabJack.
     name = "AIN0"
     
+    
+    #Database
+    pg_instance = dbms_class.DbmsConn(host="127.0.0.1",
+                                      dbname="postgres",
+                                      port=5432,
+                                      user="postgres",
+                                      password="password")
+    pg_instance.db_diag("MAGENTA")
+    conn_dbms = pg_instance.pgsql_conn()  # Cursor for Postgres instructions in Python
+    
+    pg_instance.pg_table_dropcrea(conn_dbms.cursor(), "DROP")  # DROP / CREATE
+    pg_instance.pg_table_dropcrea(conn_dbms.cursor(), "CREATE")  # DROP / CREATE
+    
+    
     #Plot PyQtGraph
     app = QtWidgets.QApplication(sys.argv)
     
@@ -42,6 +58,8 @@ else:
     def update():
         global curve, ptr, Xm
         value = ljm.eReadName(handle, name)   # Lecture de l'analog input
+        #Insertion in database
+        pg_instance.pg_table_insert(conn_dbms.cursor(), [value, 0,0,0,0,0,0,0], ptr, False)
         #print("\n%s reading : %f V" % (name, value))
         Xm[:-1] = Xm[1:]
         Xm[-1] = value      
