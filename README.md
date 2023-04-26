@@ -7,6 +7,7 @@ Signal Labjack T7
 - Python 3
 
 ## Installation
+- Créer un environnement virtuel (vous pouvez utiliser un logiciel tel qu'Anaconda)
 - Installation des packages requis : `pip install -r requirements.txt`
 - Exécution : `python graph_ljm.py`
 
@@ -21,7 +22,7 @@ Ce code permet de lire et d'afficher en temps réel une mesure d'entrée analogi
 - Une boucle infinie est exécutée pour lire en continu la valeur de l'entrée analogique et mettre à jour la courbe.
 
 ## Paramètres
-- `name` est le nom de l'entrée du Labjack à lire (par défaut : AIN0).
+- `inputs` est la liste des noms des entrées du Labjack à lire (par défaut : AIN0, AIN1, AIN2, AIN3).
 - `windowWidth` joue sur la durée d'affichage à l'écran (en ms).
 - `ptr` correspond au nombre de points. Par exemple, `ptr%20` permet de tracer 20 points à chaque update (sur de hautes fréquences, tracer 1 point par update peut ralentir l'exécution du programme).
 - `interval` correspond à l'intervalle entre chaque point (en μs).

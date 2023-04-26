@@ -10,6 +10,8 @@ Elle détaile :
     + connection à SGBD via PostGreSQL
 
 @author: silvani
+
+Modifié pour le LabJack
 """
 # ##########################################################################
 # # Python Modules
@@ -164,15 +166,11 @@ class DbmsConn:
                 create = ' CREATE TABLE IF NOT EXISTS pootesttable \
                     (EventNumber INTEGER NOT NULL PRIMARY KEY, \
                      ModBus_ILoop INTEGER, \
-                     DateTime DATE NOT NULL, \
-                     AI1 INTEGER, \
-                     AI2 INTEGER, \
-                     AI3 INTEGER, \
-                     AI4 INTEGER, \
-                     AI5 INTEGER, \
-                     AI6 INTEGER, \
-                     AI7 INTEGER, \
-                     AI8 INTEGER );'
+                     DateTime TIMESTAMP NOT NULL, \
+                     AI1 FLOAT, \
+                     AI2 FLOAT, \
+                     AI3 FLOAT, \
+                     AI4 FLOAT );'
                 print("+++++++++++++++++++++++++++++++++++\n", create)
                 curs_conn.execute(create)
                 print("pootesttable created!")
@@ -195,7 +193,7 @@ class DbmsConn:
         curs_conn : curseur de la classe psycopg:
             Permet de passer des instructions postGrSQL à partir du langage Python
         local_regs : list
-            Liste des 8 valeus de registres d'entrée analogique:
+            Liste des 4 valeurs de registres d'entrée analogique:
         incr : int
             Increment de la boucle temporelle infinie. Cadence 1s.
         cout_local: local value of the cout parameter for editing text
@@ -214,15 +212,11 @@ class DbmsConn:
 
         try:
             insert = 'INSERT into pootesttable VALUES('+str(incr+1) + "," \
-             + str(incr)+", ""'"+str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + "'," \
+             + str(incr)+", ""'"+str(datetime.now().strftime('%Y-%m-%d %H:%M:%S.%fZ')) + "'," \
              + str(local_regs[0]) + ", " \
              + str(local_regs[1]) + ", " \
              + str(local_regs[2]) + ", " \
-             + str(local_regs[3]) + ", " \
-             + str(local_regs[4]) + ", " \
-             + str(local_regs[5]) + ", " \
-             + str(local_regs[6]) + ", " \
-             + str(local_regs[7]) + ');'
+             + str(local_regs[3]) + ');'
         # print(insert) 
             curs_conn.execute(insert)
 

@@ -2,6 +2,11 @@
 """
 @author: Jean BERTRAND, Félicien BERTRAND, Tassadit YACINE
 Date: 02 Mar 2023
+
+Ce programme effectue les actions suivantes :
+    + Connexion au LabJack et lecture des entrées
+    + Affichage sur un graphique
+    + Insertion des valeurs dans une base de données PostgreSQL
 """
 
 # Import libraries
@@ -28,7 +33,7 @@ else:
           (info[0], info[1], info[2], ljm.numberToIP(info[3]), info[4], info[5]))
     
     # Setup and call eReadName to read from AIN0 on the LabJack.
-    name = "AIN0"
+    inputs = ["AIN0", "AIN1", "AIN2", "AIN3"]
     
     
     #Database
@@ -48,7 +53,7 @@ else:
     app = QtWidgets.QApplication(sys.argv)
     
     win = pg.GraphicsLayoutWidget(title="Labjack Signal GUI")
-    p = win.addPlot(title=name)
+    p = win.addPlot(title=inputs)
     curve = p.plot(pen=None, symbol='o')
     
     windowWidth = 20
@@ -57,12 +62,14 @@ else:
     
     def update():
         global curve, ptr, Xm
-        value = ljm.eReadName(handle, name)   # Lecture de l'analog input
+        nb_inputs = len(inputs)
+        values = ljm.eReadNames(handle, nb_inputs, inputs)   # Lecture des analog inputs
         #Insertion in database
-        pg_instance.pg_table_insert(conn_dbms.cursor(), [value, 0,0,0,0,0,0,0], ptr, False)
-        #print("\n%s reading : %f V" % (name, value))
+        zeros = np.zeros(4 - nb_inputs, dtype=int)
+        values = np.concatenate([values, zeros])
+        pg_instance.pg_table_insert(conn_dbms.cursor(), values, ptr, False)
         Xm[:-1] = Xm[1:]
-        Xm[-1] = value      
+        Xm[-1] = values[0] #TODO : pour l'instant le graphique n'affiche que la première valeur
         ptr += 1
         curve.setData(Xm)
         curve.setPos(ptr,0)
