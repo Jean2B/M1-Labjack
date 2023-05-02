@@ -10,6 +10,7 @@ Signal Labjack T7
 - Créer un environnement virtuel (vous pouvez utiliser un logiciel tel qu'Anaconda)
 - Installation des packages requis : `pip install -r requirements.txt`
 - Exécution : `python graph_ljm.py`
+*Si vous souhaitez utiliser le LabJack avec une connexion USB, il est nécessaire de télécharger le driver du LabJack, et modifier le type de connexion en passant par exemple de TCP à ANY: `connection_type= "ANY"`* 
 
 ## Description
 Ce code permet de lire et d'afficher en temps réel une mesure d'entrée analogique provenant d'un LabJack:
