@@ -18,10 +18,11 @@ from labjack import ljm
 
 import dbms_class
 
+connection_type = "TCP"
 
 # Open first found LabJack
 try:
-    handle = ljm.openS("ANY", "TCP", "ANY")  # Any device, TCP connection, Any identifier
+    handle = ljm.openS("ANY", connection_type, "ANY")  # Any device, TCP connection, Any identifier
 
 except ljm.LJMError as e:
     print(f"Connection to Labjack failed:\n{e}")
