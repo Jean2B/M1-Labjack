@@ -33,7 +33,7 @@ else:
           "Serial number: %i, IP address: %s, Port: %i,\nMax bytes per MB: %i" %
           (info[0], info[1], info[2], ljm.numberToIP(info[3]), info[4], info[5]))
     
-    # Setup and call eReadName to read from AIN0 on the LabJack.
+    # Setup and call eReadNames to read from AIN0/AIN1/AIN2/AIN3 on the LabJack.
     inputs = ["AIN0", "AIN1", "AIN2", "AIN3"]
     
     
@@ -61,17 +61,33 @@ else:
     Xm = np.linspace(0,0,windowWidth)    
     ptr = -windowWidth
     
+    """
+    
+    """
     def update():
-        global curve, ptr, Xm
+        global ptr
         nb_inputs = len(inputs)
         values = ljm.eReadNames(handle, nb_inputs, inputs)   # Lecture des analog inputs
+        ptr += 1
+        insert_db(nb_inputs, values, ptr)
+        #graph(values, ptr)
+    
+    """
+    
+    """
+    def insert_db(nb_inputs, values, ptr):
         #Insertion in database
         zeros = np.zeros(4 - nb_inputs, dtype=int)
         values = np.concatenate([values, zeros])
         pg_instance.pg_table_insert(conn_dbms.cursor(), values, ptr, False)
+        
+    """
+    
+    """
+    def graph(values, ptr):
+        global curve, Xm
         Xm[:-1] = Xm[1:]
-        Xm[-1] = values[0] #TODO : pour l'instant le graphique n'affiche que la première valeur
-        ptr += 1
+        Xm[-1] = values[0] #Le graphique n'affiche que la première valeur
         curve.setData(Xm)
         curve.setPos(ptr,0)
         if ptr%20 == 0:
@@ -86,5 +102,5 @@ else:
         ljm.waitForNextInterval(intervalHandle)
         update()
     
-    pg.QtGui.QApplication.exec_()
+    ljm.cleanInterval(intervalHandle)
     ljm.close(handle)
