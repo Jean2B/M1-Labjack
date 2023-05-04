@@ -2,11 +2,12 @@
 """
 @author: Jean BERTRAND, Félicien BERTRAND, Tassadit YACINE
 Date: 02 Mar 2023
+Last update : 04 May 2023
 
-Ce programme effectue les actions suivantes :
-    + Connexion au LabJack et lecture des entrées
-    + Affichage sur un graphique
-    + Insertion des valeurs dans une base de données PostgreSQL
+This program does the following:
+    + Connection to LabJack and reading inputs
+    + Display on a graph
+    + Inserting values in a PostgreSQL database
 """
 
 # Import libraries
@@ -19,6 +20,11 @@ from labjack import ljm
 import dbms_class
 
 connection_type = "TCP"
+# Setup and call eReadNames to read from AIN0/AIN1/AIN2/AIN3 on the LabJack.
+inputs = ["AIN0", "AIN1", "AIN2", "AIN3"]
+windowWidth = 20
+intervalHandle = 1
+interval = 1000 # Number of microseconds in the interval
 
 # Open first found LabJack
 try:
@@ -32,10 +38,6 @@ else:
     print("Opened a LabJack with Device type: %i, Connection type: %i,\n"
           "Serial number: %i, IP address: %s, Port: %i,\nMax bytes per MB: %i" %
           (info[0], info[1], info[2], ljm.numberToIP(info[3]), info[4], info[5]))
-    
-    # Setup and call eReadNames to read from AIN0/AIN1/AIN2/AIN3 on the LabJack.
-    inputs = ["AIN0", "AIN1", "AIN2", "AIN3"]
-    
     
     #Database
     pg_instance = dbms_class.DbmsConn(host="127.0.0.1",
@@ -57,12 +59,12 @@ else:
     p = win.addPlot(title=inputs)
     curve = p.plot(pen=None, symbol='o')
     
-    windowWidth = 20
     Xm = np.linspace(0,0,windowWidth)    
     ptr = -windowWidth
     
     """
-    
+    This method reads the values from the Labjack and updates the database
+    and the graph, by calling the 'insert_db' and 'graph' methods respectively.
     """
     def update():
         global ptr
@@ -70,19 +72,37 @@ else:
         values = ljm.eReadNames(handle, nb_inputs, inputs)   # Lecture des analog inputs
         ptr += 1
         insert_db(nb_inputs, values, ptr)
-        #graph(values, ptr)
+        graph(values, ptr)
     
     """
+    This method inserts the signal values into a PostgreSQL database.
     
+    Parameters
+    ----------
+    nb_inputs: int
+        Number of signals to process.
+    values: [float]
+        List containing the value of each signal.
+    ptr: int
+        Number assigned to the processed frame.
     """
     def insert_db(nb_inputs, values, ptr):
-        #Insertion in database
         zeros = np.zeros(4 - nb_inputs, dtype=int)
         values = np.concatenate([values, zeros])
         pg_instance.pg_table_insert(conn_dbms.cursor(), values, ptr, False)
         
     """
+    This method displays a graph of the points corresponding to
+    the signal values, in order to reconstitute it.
+    Abscissa: Number of points
+    Ordinate: Voltage (V)
     
+    Parameters
+    ----------
+    values: [float]
+        List containing the value of each signal.
+    ptr: int
+        Number assigned to the processed frame.
     """
     def graph(values, ptr):
         global curve, Xm
@@ -94,9 +114,7 @@ else:
             QtWidgets.QApplication.processEvents()
     
     win.show()
-    
-    intervalHandle = 1
-    interval = 1000 # Number of microseconds in the interval
+
     ljm.startInterval(intervalHandle, interval) 
     while True:
         ljm.waitForNextInterval(intervalHandle)
